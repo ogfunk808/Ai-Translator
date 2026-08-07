@@ -1,5 +1,5 @@
 /**
- * NexusAI - Modern Neural Voice & Text Translator Logic
+ * OG TRANSLATOR - Real 3D Three.js WebGL Logic & Voice Engine
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -116,19 +116,23 @@ document.addEventListener('DOMContentLoaded', () => {
         { code: 'zu', name: 'Zulu', flag: '🇿🇦', speech: 'zu-ZA' }
     ];
 
-    // --- State Variables ---
+    // --- 2. State Variables ---
     let sourceLang = LANGUAGES[0]; // Auto Detect
     let targetLang = LANGUAGES.find(l => l.code === 'es') || LANGUAGES[46]; // Spanish default
     let selectedTone = 'standard';
     let debounceTimer = null;
     let isRecording = false;
+    let isSpeaking = false;
     let recognition = null;
-    let activeSynthUtterance = null;
-    let favoritesList = JSON.parse(localStorage.getItem('nexus_favs') || '[]');
-    let historyList = JSON.parse(localStorage.getItem('nexus_history') || '[]');
-    let userEngineConfig = JSON.parse(localStorage.getItem('nexus_settings') || '{"engine":"neural","pitch":1.0,"rate":1.0}');
+    let is3DSpinning = true;
+    let particleDensityMode = 1;
+    let historyList = JSON.parse(localStorage.getItem('og_3d_history') || '[]');
+    let userEngineConfig = JSON.parse(localStorage.getItem('og_3d_settings') || '{"engine":"neural","pitch":1.0,"rate":1.0}');
 
-    // --- DOM Element References ---
+    // --- DOM Elements ---
+    const canvas = document.getElementById('webgl-canvas');
+    const wrapper3d = document.getElementById('translator-3d-wrapper');
+
     const sourceLangWrapper = document.getElementById('source-lang-wrapper');
     const sourceLangBtn = document.getElementById('source-lang-btn');
     const sourceFlag = document.getElementById('source-flag');
@@ -165,6 +169,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleDictBtn = document.getElementById('toggle-dict-btn');
     const closeDictBtn = document.getElementById('close-dict-btn');
 
+    const btnToggleSpin = document.getElementById('btn-toggle-spin');
+    const btnToggleParticles = document.getElementById('btn-toggle-particles');
+    const btnResetCamera = document.getElementById('btn-reset-camera');
+
     const themeToggle = document.getElementById('theme-toggle');
     const historyBtn = document.getElementById('history-btn');
     const historyOverlay = document.getElementById('history-overlay');
@@ -184,18 +192,210 @@ document.addEventListener('DOMContentLoaded', () => {
     const pitchVal = document.getElementById('pitch-val');
     const rateVal = document.getElementById('rate-val');
 
-    // --- 2. Populate Dropdown Menus ---
+    // --- 3. Three.js WebGL 3D Engine Initialization ---
+    let scene, camera, renderer, globeMesh, coreMesh, particleSystem, energyRing1, energyRing2;
+    let particlePositions, particleOriginals;
+    const PARTICLE_COUNT = 1600;
+
+    function init3DScene() {
+        if (!THREE) return;
+
+        // Scene & Camera
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 25;
+
+        // Renderer
+        renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // 1. Holographic 3D Wireframe Globe
+        const globeGeo = new THREE.SphereGeometry(7.5, 32, 32);
+        const globeMat = new THREE.MeshBasicMaterial({
+            color: 0xec4899,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.25
+        });
+        globeMesh = new THREE.Mesh(globeGeo, globeMat);
+        scene.add(globeMesh);
+
+        // 2. Inner Glowing Core
+        const coreGeo = new THREE.SphereGeometry(6.2, 24, 24);
+        const coreMat = new THREE.MeshBasicMaterial({
+            color: 0x6366f1,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.15
+        });
+        coreMesh = new THREE.Mesh(coreGeo, coreMat);
+        scene.add(coreMesh);
+
+        // 3. Orbiting 3D Energy Rings
+        const ringGeo1 = new THREE.RingGeometry(9.2, 9.5, 64);
+        const ringMat1 = new THREE.MeshBasicMaterial({ color: 0xf472b6, side: THREE.DoubleSide, wireframe: true, transparent: true, opacity: 0.35 });
+        energyRing1 = new THREE.Mesh(ringGeo1, ringMat1);
+        energyRing1.rotation.x = Math.PI / 3;
+        scene.add(energyRing1);
+
+        const ringGeo2 = new THREE.RingGeometry(11.0, 11.3, 64);
+        const ringMat2 = new THREE.MeshBasicMaterial({ color: 0x818cf8, side: THREE.DoubleSide, wireframe: true, transparent: true, opacity: 0.25 });
+        energyRing2 = new THREE.Mesh(ringGeo2, ringMat2);
+        energyRing2.rotation.y = Math.PI / 4;
+        scene.add(energyRing2);
+
+        // 4. Orbiting 3D Particle Cloud
+        const particleGeo = new THREE.BufferGeometry();
+        particlePositions = new Float32Array(PARTICLE_COUNT * 3);
+        particleOriginals = new Float32Array(PARTICLE_COUNT * 3);
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const u = Math.random();
+            const v = Math.random();
+            const theta = u * 2.0 * Math.PI;
+            const phi = Math.acos(2.0 * v - 1.0);
+            const r = 8.5 + (Math.random() - 0.5) * 6.0;
+
+            const x = r * Math.sin(phi) * Math.cos(theta);
+            const y = r * Math.sin(phi) * Math.sin(theta);
+            const z = r * Math.cos(phi);
+
+            particlePositions[i * 3] = x;
+            particlePositions[i * 3 + 1] = y;
+            particlePositions[i * 3 + 2] = z;
+
+            particleOriginals[i * 3] = x;
+            particleOriginals[i * 3 + 1] = y;
+            particleOriginals[i * 3 + 2] = z;
+        }
+
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+        const particleMat = new THREE.PointsMaterial({
+            color: 0xec4899,
+            size: 0.18,
+            transparent: true,
+            opacity: 0.7,
+            blending: THREE.AdditiveBlending
+        });
+
+        particleSystem = new THREE.Points(particleGeo, particleMat);
+        scene.add(particleSystem);
+
+        // Resize Listener
+        window.addEventListener('resize', onWindowResize);
+
+        // Mouse Parallax Listener
+        window.addEventListener('mousemove', onMouseMoveParallax);
+
+        // Animation Render Loop
+        animate3D();
+    }
+
+    let mouseX = 0, mouseY = 0;
+    let targetCameraX = 0, targetCameraY = 0;
+
+    function onMouseMoveParallax(e) {
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
+
+        mouseX = (e.clientX - windowHalfX) / windowHalfX;
+        mouseY = (e.clientY - windowHalfY) / windowHalfY;
+
+        targetCameraX = mouseX * 4;
+        targetCameraY = -mouseY * 4;
+
+        // 3D Card Tilt Effect
+        const tiltX = mouseY * -12;
+        const tiltY = mouseX * 12;
+        wrapper3d.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+    }
+
+    function onWindowResize() {
+        if (!camera || !renderer) return;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    let clock = new THREE.Clock();
+
+    function animate3D() {
+        requestAnimationFrame(animate3D);
+
+        const elapsedTime = clock.getElapsedTime();
+
+        // Auto Rotation
+        if (is3DSpinning && globeMesh) {
+            globeMesh.rotation.y += 0.003;
+            coreMesh.rotation.y -= 0.004;
+            energyRing1.rotation.z += 0.005;
+            energyRing2.rotation.z -= 0.004;
+            particleSystem.rotation.y += 0.002;
+        }
+
+        // Camera Smooth Lerp
+        camera.position.x += (targetCameraX - camera.position.x) * 0.05;
+        camera.position.y += (targetCameraY - camera.position.y) * 0.05;
+        camera.lookAt(scene.position);
+
+        // Audio-Reactive Particle Pulse
+        const positions = particleSystem.geometry.attributes.position.array;
+        const reactiveMultiplier = (isRecording || isSpeaking) ? 1.4 : 1.0;
+        const pulse = Math.sin(elapsedTime * 4) * (isRecording ? 0.8 : 0.2);
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const idx = i * 3;
+            const ox = particleOriginals[idx];
+            const oy = particleOriginals[idx + 1];
+            const oz = particleOriginals[idx + 2];
+
+            positions[idx] = ox * (reactiveMultiplier + pulse * 0.1);
+            positions[idx + 1] = oy * (reactiveMultiplier + pulse * 0.1);
+            positions[idx + 2] = oz * (reactiveMultiplier + pulse * 0.1);
+        }
+
+        particleSystem.geometry.attributes.position.needsUpdate = true;
+        renderer.render(scene, camera);
+    }
+
+    init3DScene();
+
+    // 3D Controls Listeners
+    btnToggleSpin.addEventListener('click', () => {
+        is3DSpinning = !is3DSpinning;
+        btnToggleSpin.classList.toggle('active', is3DSpinning);
+        btnToggleSpin.querySelector('span').textContent = `🌐 Auto Rotation: ${is3DSpinning ? 'ON' : 'OFF'}`;
+        showToast(is3DSpinning ? '🌐 3D Rotation Enabled' : '⏸️ 3D Rotation Paused');
+    });
+
+    btnToggleParticles.addEventListener('click', () => {
+        particleDensityMode = (particleDensityMode % 3) + 1;
+        if (particleSystem) {
+            particleSystem.material.size = 0.12 * particleDensityMode;
+        }
+        showToast(`✨ 3D Particle Density: Level ${particleDensityMode}`);
+    });
+
+    btnResetCamera.addEventListener('click', () => {
+        targetCameraX = 0;
+        targetCameraY = 0;
+        wrapper3d.style.transform = `rotateX(0deg) rotateY(0deg)`;
+        showToast('🎯 3D Perspective Reset');
+    });
+
+    // --- 4. Populate Dropdown Menus ---
     function renderDropdownList(listElement, languages, isSource = true) {
         listElement.innerHTML = '';
         languages.forEach(lang => {
-            if (!isSource && lang.code === 'auto') return; // Target cannot be Auto Detect
+            if (!isSource && lang.code === 'auto') return;
             const option = document.createElement('div');
             option.className = 'lang-option';
             const currentSelected = isSource ? sourceLang.code : targetLang.code;
             if (lang.code === currentSelected) option.classList.add('selected');
 
             option.innerHTML = `
-                <div style="display:flex; align-items:center; gap:0.6rem;">
+                <div style="display:flex; align-items:center; gap:0.65rem;">
                     <span class="lang-flag">${lang.flag}</span>
                     <span>${lang.name}</span>
                 </div>
@@ -224,7 +424,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderDropdownList(sourceLangList, LANGUAGES, true);
     renderDropdownList(targetLangList, LANGUAGES, false);
 
-    // Filter Languages on Search Input
     sourceSearch.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase();
         const filtered = LANGUAGES.filter(l => l.name.toLowerCase().includes(query) || l.code.toLowerCase().includes(query));
@@ -237,7 +436,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDropdownList(targetLangList, filtered, false);
     });
 
-    // Toggle Dropdowns
     sourceLangBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         targetLangWrapper.classList.remove('active');
@@ -257,15 +455,13 @@ document.addEventListener('DOMContentLoaded', () => {
         targetLangWrapper.classList.remove('active');
     });
 
-    // --- 3. Translation Engine & API Handler ---
+    // --- 5. Translation Engine & API Handler ---
     async function performTranslation(text, srcCode, tgtCode, tone) {
         if (!text.trim()) return '';
 
-        // Prepare language pair (auto -> en default if auto-detect)
         const srcParam = srcCode === 'auto' ? 'auto' : srcCode;
         const langpair = `${srcParam}|${tgtCode}`;
 
-        // Custom API Key Engine Fallback
         if (userEngineConfig.engine === 'gemini' && userEngineConfig.apiKey) {
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${userEngineConfig.apiKey}`, {
@@ -273,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{
-                            parts: [{ text: `Translate the following text into ${targetLang.name} using a ${tone} tone. Return ONLY the translated text without extra formatting:\n\n${text}` }]
+                            parts: [{ text: `Translate the following text into ${targetLang.name} using a ${tone} tone. Return ONLY the translated text:\n\n${text}` }]
                         }]
                     })
                 });
@@ -282,11 +478,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     return data.candidates[0].content.parts[0].text.trim();
                 }
             } catch (err) {
-                console.warn('Gemini API call failed, falling back to neural mesh...', err);
+                console.warn('Gemini API failed, falling back to neural mesh...', err);
             }
         }
 
-        // Default Neural Mesh API (MyMemory + Lingva fallback)
         try {
             const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${langpair}`;
             const response = await fetch(url);
@@ -295,7 +490,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.responseData && data.responseData.translatedText) {
                 let translated = data.responseData.translatedText;
                 
-                // If Auto-detect was used, update detected language flag/info if returned
                 if (srcCode === 'auto' && data.responseData.detectedLanguage) {
                     const detectedCode = data.responseData.detectedLanguage.toLowerCase();
                     const match = LANGUAGES.find(l => l.code.toLowerCase() === detectedCode);
@@ -305,40 +499,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                // Apply tone modification styling if specified
-                if (tone === 'formal') {
-                    // Slight refinement simulation for tone mode
-                    translated = applyToneAdjustment(translated, 'formal');
-                } else if (tone === 'casual') {
-                    translated = applyToneAdjustment(translated, 'casual');
-                }
+                if (tone === 'formal') translated = applyToneAdjustment(translated, 'formal');
+                if (tone === 'casual') translated = applyToneAdjustment(translated, 'casual');
 
                 return translated;
             }
         } catch (err) {
-            console.error('Translation network request failed:', err);
+            console.error('Translation error:', err);
         }
 
-        return 'Error: Unable to connect to translation server. Please check your internet connection.';
+        return 'Error: Unable to connect to neural translation server. Please check internet connection.';
     }
 
     function applyToneAdjustment(text, tone) {
-        if (tone === 'formal') {
-            return text.replace(/thanks/gi, 'Thank you').replace(/hey/gi, 'Greetings');
-        }
-        if (tone === 'casual') {
-            return text.replace(/Thank you/gi, 'Thanks').replace(/Greetings/gi, 'Hey');
-        }
+        if (tone === 'formal') return text.replace(/thanks/gi, 'Thank you').replace(/hey/gi, 'Greetings');
+        if (tone === 'casual') return text.replace(/Thank you/gi, 'Thanks').replace(/Greetings/gi, 'Hey');
         return text;
     }
 
-    // Trigger Translation with Debouncing
     function triggerTranslation() {
         const text = sourceText.value.trim();
         charCounter.textContent = `${sourceText.value.length} / 5000`;
 
         if (!text) {
-            targetText.innerHTML = '<span class="output-placeholder">Translation will appear here in real-time...</span>';
+            targetText.innerHTML = '<span class="output-placeholder">3D Neural translation will appear here in real-time...</span>';
             translationLoader.classList.remove('active');
             return;
         }
@@ -353,17 +537,15 @@ document.addEventListener('DOMContentLoaded', () => {
             targetText.style.opacity = '1';
             translationLoader.classList.remove('active');
 
-            // Save to history
             saveToHistory(text, result, sourceLang.name, targetLang.name);
             generateDictionarySynonyms(text, result);
         }, 400);
     }
 
-    // Input Listeners
     sourceText.addEventListener('input', triggerTranslation);
     translateNowBtn.addEventListener('click', triggerTranslation);
 
-    // --- 4. Voice Speech-to-Text Recognition ---
+    // --- 6. Voice Speech-to-Text Recognition ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
         recognition = new SpeechRecognition();
@@ -374,12 +556,12 @@ document.addEventListener('DOMContentLoaded', () => {
             isRecording = true;
             micBtn.classList.add('recording');
             voiceWave.classList.add('active');
-            showToast('🎙️ Listening... Speak now');
+            showToast('🎙️ 3D Listening... Speak into microphone');
         };
 
         recognition.onresult = (event) => {
-            let interimTranscript = '';
             let finalTranscript = '';
+            let interimTranscript = '';
 
             for (let i = event.resultIndex; i < event.results.length; i++) {
                 const transcript = event.results[i][0].transcript;
@@ -397,7 +579,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         recognition.onerror = (event) => {
-            console.error('Speech Recognition Error:', event.error);
             stopRecording();
             showToast('⚠️ Microphone error: ' + event.error);
         };
@@ -405,8 +586,6 @@ document.addEventListener('DOMContentLoaded', () => {
         recognition.onend = () => {
             stopRecording();
         };
-    } else {
-        micBtn.title = 'Speech Recognition not supported in this browser';
     }
 
     function stopRecording() {
@@ -418,7 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     micBtn.addEventListener('click', () => {
         if (!SpeechRecognition) {
-            showToast('⚠️ Voice input requires Google Chrome, Edge, or Safari.');
+            showToast('⚠️ Voice input requires Chrome, Edge, or Safari.');
             return;
         }
 
@@ -430,29 +609,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- 5. Voice Text-to-Speech Output ---
+    // --- 7. Voice Text-to-Speech Output ---
     function speakText(text, langCode) {
         if (!('speechSynthesis' in window)) {
-            showToast('⚠️ Audio playback not supported in this browser');
+            showToast('⚠️ Audio playback not supported');
             return;
         }
 
-        window.speechSynthesis.cancel(); // Stop any active speech
+        window.speechSynthesis.cancel();
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.pitch = parseFloat(userEngineConfig.pitch || 1.0);
         utterance.rate = parseFloat(userEngineConfig.rate || 1.0);
 
-        // Find best matching system voice
         const voices = window.speechSynthesis.getVoices();
         const matchedVoice = voices.find(v => v.lang.startsWith(langCode)) || voices.find(v => v.lang.startsWith('en'));
         if (matchedVoice) utterance.voice = matchedVoice;
 
         utterance.onstart = () => {
+            isSpeaking = true;
             targetTtsBtn.classList.add('speaking');
         };
 
         utterance.onend = utterance.onerror = () => {
+            isSpeaking = false;
             targetTtsBtn.classList.remove('speaking');
         };
 
@@ -465,11 +645,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     targetTtsBtn.addEventListener('click', () => {
         const text = targetText.textContent;
-        if (text && !text.includes('Translation will appear')) speakText(text, targetLang.speech);
+        if (text && !text.includes('3D Neural translation')) speakText(text, targetLang.speech);
     });
 
-    // --- 6. Utility Features (Swap, Copy, Clear, Tone) ---
-    // Swap Languages
+    // --- 8. Swap, Copy, Clear, Tone Pills ---
     swapLangBtn.addEventListener('click', () => {
         if (sourceLang.code === 'auto') {
             showToast('Cannot swap when Source is Auto Detect!');
@@ -488,9 +667,8 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDropdownList(sourceLangList, LANGUAGES, true);
         renderDropdownList(targetLangList, LANGUAGES, false);
 
-        // Swap text contents
         const srcVal = sourceText.value;
-        const tgtVal = targetText.textContent.includes('Translation will appear') ? '' : targetText.textContent;
+        const tgtVal = targetText.textContent.includes('3D Neural translation') ? '' : targetText.textContent;
 
         sourceText.value = tgtVal;
         targetText.textContent = srcVal;
@@ -499,37 +677,33 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('🔄 Languages swapped!');
     });
 
-    // Clear Source
     clearSourceBtn.addEventListener('click', () => {
         sourceText.value = '';
-        targetText.innerHTML = '<span class="output-placeholder">Translation will appear here in real-time...</span>';
+        targetText.innerHTML = '<span class="output-placeholder">3D Neural translation will appear here in real-time...</span>';
         charCounter.textContent = '0 / 5000';
         dictDrawer.classList.remove('active');
         if (isRecording) stopRecording();
     });
 
-    // Paste Clipboard
     pasteBtn.addEventListener('click', async () => {
         try {
             const clipText = await navigator.clipboard.readText();
             sourceText.value = clipText;
             triggerTranslation();
-            showToast('📋 Text pasted from clipboard!');
+            showToast('📋 Text pasted!');
         } catch (err) {
-            showToast('⚠️ Clipboard read permission denied.');
+            showToast('⚠️ Clipboard permission denied.');
         }
     });
 
-    // Copy Translation
     copyTargetBtn.addEventListener('click', () => {
         const text = targetText.textContent;
-        if (text && !text.includes('Translation will appear')) {
+        if (text && !text.includes('3D Neural translation')) {
             navigator.clipboard.writeText(text);
-            showToast('✅ Translation copied to clipboard!');
+            showToast('✅ Translation copied!');
         }
     });
 
-    // Tone Pills Handler
     document.querySelectorAll('.tone-pill').forEach(pill => {
         pill.addEventListener('click', () => {
             document.querySelectorAll('.tone-pill').forEach(p => p.classList.remove('active'));
@@ -539,16 +713,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Favorites Handler
     favBtn.addEventListener('click', () => {
         const text = targetText.textContent;
-        if (!text || text.includes('Translation will appear')) return;
+        if (!text || text.includes('3D Neural translation')) return;
 
         favBtn.classList.toggle('favorited');
-        showToast(favBtn.classList.contains('favorited') ? '❤️ Saved to favorites!' : 'Removed from favorites');
+        showToast(favBtn.classList.contains('favorited') ? '❤️ Saved to 3D Favorites!' : 'Removed from favorites');
     });
 
-    // --- 7. Dictionary & Synonyms Drawer ---
+    // --- 9. Dictionary Drawer ---
     function generateDictionarySynonyms(srcText, tgtText) {
         if (srcText.split(' ').length > 4) {
             dictDrawer.classList.remove('active');
@@ -556,22 +729,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         dictContent.innerHTML = `
-            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.2rem;">${srcText} (${sourceLang.name})</div>
-            <div>• Direct Translation: <strong style="color: var(--accent-indigo);">${tgtText}</strong></div>
-            <div>• Synonyms: ${tgtText}, context adaptation, definition term</div>
+            <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.2rem;">${srcText} (${sourceLang.name})</div>
+            <div>• Direct Translation: <strong style="color: var(--accent-pink);">${tgtText}</strong></div>
+            <div>• Synonyms & Alternatives: ${tgtText}, context adaptation, definition term</div>
         `;
     }
 
-    toggleDictBtn.addEventListener('click', () => {
-        dictDrawer.classList.toggle('active');
-    });
-    closeDictBtn.addEventListener('click', () => {
-        dictDrawer.classList.remove('active');
-    });
+    toggleDictBtn.addEventListener('click', () => dictDrawer.classList.toggle('active'));
+    closeDictBtn.addEventListener('click', () => dictDrawer.classList.remove('active'));
 
-    // --- 8. History Drawer Management ---
+    // --- 10. History Drawer ---
     function saveToHistory(src, tgt, srcL, tgtL) {
-        if (!src || !tgt || tgt.includes('Translation will appear')) return;
+        if (!src || !tgt || tgt.includes('3D Neural translation')) return;
         const exists = historyList.some(item => item.src === src && item.tgt === tgt);
         if (exists) return;
 
@@ -584,14 +753,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (historyList.length > 30) historyList.pop();
-        localStorage.setItem('nexus_history', JSON.stringify(historyList));
+        localStorage.setItem('og_3d_history', JSON.stringify(historyList));
         renderHistory();
     }
 
     function renderHistory() {
         historyListContainer.innerHTML = '';
         if (historyList.length === 0) {
-            historyListContainer.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 2rem;">No translation history yet.</div>';
+            historyListContainer.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 2rem;">No 3D translation history yet.</div>';
             return;
         }
 
@@ -622,12 +791,12 @@ document.addEventListener('DOMContentLoaded', () => {
     closeHistoryBtn.addEventListener('click', () => historyOverlay.classList.remove('open'));
     clearHistoryBtn.addEventListener('click', () => {
         historyList = [];
-        localStorage.removeItem('nexus_history');
+        localStorage.removeItem('og_3d_history');
         renderHistory();
         showToast('History cleared');
     });
 
-    // --- 9. Settings Modal Management ---
+    // --- 11. Settings Modal ---
     settingsBtn.addEventListener('click', () => {
         engineSelect.value = userEngineConfig.engine || 'neural';
         apiKeyInput.value = userEngineConfig.apiKey || '';
@@ -656,19 +825,19 @@ document.addEventListener('DOMContentLoaded', () => {
             pitch: parseFloat(speechPitch.value),
             rate: parseFloat(speechRate.value)
         };
-        localStorage.setItem('nexus_settings', JSON.stringify(userEngineConfig));
+        localStorage.setItem('og_3d_settings', JSON.stringify(userEngineConfig));
         settingsModal.classList.remove('open');
-        showToast('⚙️ Settings saved successfully!');
+        showToast('⚙️ Settings saved!');
     });
 
-    // --- 10. Dark/Light Theme Toggle ---
+    // --- 12. Dark/Light Theme Toggle ---
     themeToggle.addEventListener('click', () => {
         document.body.classList.toggle('light-theme');
         document.body.classList.toggle('dark-theme');
-        showToast(`Theme switched to ${document.body.classList.contains('light-theme') ? 'Light Glass' : 'Cyber Dark'}`);
+        showToast(`Theme: ${document.body.classList.contains('light-theme') ? 'Light Glass 3D' : 'Cyber Dark 3D'}`);
     });
 
-    // --- 11. Toast Notifications Utility ---
+    // --- 13. Toast Notifications ---
     function showToast(message) {
         const toastContainer = document.getElementById('toast-container');
         const toast = document.createElement('div');
@@ -676,8 +845,6 @@ document.addEventListener('DOMContentLoaded', () => {
         toast.textContent = message;
         toastContainer.appendChild(toast);
 
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
+        setTimeout(() => toast.remove(), 3000);
     }
 });
