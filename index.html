@@ -90,7 +90,7 @@
                 <span class="sparkle">🌐</span> REAL 3D WEBGL INTERACTIVE GLOBE
             </div>
             <h1 class="hero-title">OG TRANSLATOR <span class="gradient-text">3D</span></h1>
-            <p class="hero-subtitle">Experience live 3D audio-reactive neural translation across 100+ languages with zero latency.</p>
+            <p class="hero-subtitle">Experience live 3D audio-reactive neural translation across 100+ languages including phonetic & romanized script support.</p>
 
             <!-- 3D Scene Controls Bar -->
             <div class="scene-controls-bar">
@@ -140,7 +140,7 @@
                     </div>
 
                     <div class="card-body">
-                        <textarea id="source-text" class="translation-textarea" placeholder="Type, paste, or tap microphone to speak in 3D..." maxlength="5000" spellcheck="true"></textarea>
+                        <textarea id="source-text" class="translation-textarea" placeholder="Type, paste, or speak (e.g. 'enna pandre', 'kya kar rahe ho')..." maxlength="5000" spellcheck="true"></textarea>
                         
                         <!-- Voice Waveform Visualizer -->
                         <div class="voice-wave-container" id="voice-wave">
@@ -271,6 +271,21 @@
             </div>
         </section>
 
+        <!-- Google AdSense Ad Slot Unit Container -->
+        <section class="adsense-container">
+            <div class="adsense-box">
+                <ins class="adsbygoogle"
+                     style="display:block; text-align:center;"
+                     data-ad-layout="in-article"
+                     data-ad-format="fluid"
+                     data-ad-client="ca-pub-1560865754891276"
+                     data-ad-slot="1234567890"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </section>
+
         <!-- Features Showcase Bar -->
         <section class="features-bar">
             <div class="feature-item 3d-card-hover">
@@ -298,11 +313,112 @@
                 <div class="feature-icon">🎯</div>
                 <div class="feature-text">
                     <strong>100+ World Languages</strong>
-                    <span>Complete global language support</span>
+                    <span>Phonetic & Romanized text translation</span>
                 </div>
             </div>
         </section>
     </main>
+
+    <!-- Footer with AdSense Compliance Links -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <span class="brand-name">OG <span class="highlight">TRANSLATOR</span></span>
+                <p>© 2026 OG TRANSLATOR. All rights reserved. Powered by WebGL 3D Neural Mesh.</p>
+            </div>
+            <div class="footer-links">
+                <button class="footer-link-btn" id="link-privacy">Privacy Policy</button>
+                <button class="footer-link-btn" id="link-terms">Terms of Service</button>
+                <button class="footer-link-btn" id="link-about">About Us</button>
+                <button class="footer-link-btn" id="link-contact">Contact Us</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- GDPR / AdSense Cookie Consent Banner -->
+    <div class="cookie-banner" id="cookie-banner">
+        <div class="cookie-content">
+            <p>🍪 We use cookies and Google AdSense to personalize content, advertisements, and analyze WebGL traffic. By using OG TRANSLATOR, you agree to our <a href="#" id="cookie-privacy-link">Privacy Policy</a>.</p>
+            <div class="cookie-actions">
+                <button class="glow-submit-btn 3d-btn" id="accept-cookies-btn">Accept All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div class="modal-overlay" id="privacy-modal">
+        <div class="modal-card legal-modal">
+            <div class="modal-header">
+                <h3>🔒 Privacy Policy</h3>
+                <button class="close-modal-btn" id="close-privacy-btn">&times;</button>
+            </div>
+            <div class="modal-body legal-body">
+                <p><strong>Effective Date:</strong> August 7, 2026</p>
+                <p>At <strong>OG TRANSLATOR</strong>, accessible from our web platform, user privacy is one of our top priorities. This Privacy Policy document outlines the types of information collected and recorded by OG TRANSLATOR and how we use it in accordance with Google AdSense and international privacy regulations (GDPR, CCPA).</p>
+
+                <h4>1. Information We Collect</h4>
+                <p>OG TRANSLATOR does not store personal identification information (PII) on external servers. Text inputs and voice recognition audio are processed transiently in your browser session for translation and speech-to-text functionality.</p>
+
+                <h4>2. Google AdSense & Cookies</h4>
+                <p>OG TRANSLATOR uses Google AdSense (Publisher ID: <code>ca-pub-1560865754891276</code>). Google, as a third-party vendor, uses cookies to serve ads on our site. Google's use of advertising cookies enables it and its partners to serve ads to users based on their visit to our site and/or other sites on the Internet.</p>
+
+                <h4>3. Third-Party Privacy Policies</h4>
+                <p>OG TRANSLATOR's Privacy Policy does not apply to other advertisers or websites. We advise you to consult the respective Privacy Policies of these third-party ad servers (such as Google AdSense) for more detailed information.</p>
+
+                <h4>4. Contact Us</h4>
+                <p>If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us at <code>privacy@ogtranslator.com</code>.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms of Service Modal -->
+    <div class="modal-overlay" id="terms-modal">
+        <div class="modal-card legal-modal">
+            <div class="modal-header">
+                <h3>📜 Terms of Service</h3>
+                <button class="close-modal-btn" id="close-terms-btn">&times;</button>
+            </div>
+            <div class="modal-body legal-body">
+                <h4>1. Acceptance of Terms</h4>
+                <p>By accessing and using OG TRANSLATOR, you accept and agree to be bound by the terms and provisions of this agreement.</p>
+
+                <h4>2. Use License</h4>
+                <p>Permission is granted to use OG TRANSLATOR for personal, non-commercial, or educational translation purposes. You agree not to abuse or automate server requests without authorization.</p>
+
+                <h4>3. Disclaimer</h4>
+                <p>The translation services provided by OG TRANSLATOR are delivered "as is". While we strive for 100% accuracy, we make no warranties regarding translation guarantees for critical legal or medical documents.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Us Modal -->
+    <div class="modal-overlay" id="about-modal">
+        <div class="modal-card legal-modal">
+            <div class="modal-header">
+                <h3>ℹ️ About OG TRANSLATOR</h3>
+                <button class="close-modal-btn" id="close-about-btn">&times;</button>
+            </div>
+            <div class="modal-body legal-body">
+                <p><strong>OG TRANSLATOR</strong> is a next-generation 3D WebGL neural language translation platform designed to eliminate language barriers across 100+ global languages.</p>
+                <p>Featuring a real-time Three.js WebGL holographic particle globe, voice speech recognition, and neural audio synthesis, OG TRANSLATOR delivers zero-latency translation for both native and romanized phonetic scripts.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Us Modal -->
+    <div class="modal-overlay" id="contact-modal">
+        <div class="modal-card legal-modal">
+            <div class="modal-header">
+                <h3>✉️ Contact Support</h3>
+                <button class="close-modal-btn" id="close-contact-btn">&times;</button>
+            </div>
+            <div class="modal-body legal-body">
+                <p>Have feedback, feature requests, or technical inquiries?</p>
+                <p>📧 Email: <code>support@ogtranslator.com</code></p>
+                <p>🌐 GitHub: <a href="https://github.com/ogfunk808/Ai-Translator" target="_blank" style="color: var(--accent-pink);">github.com/ogfunk808/Ai-Translator</a></p>
+            </div>
+        </div>
+    </div>
 
     <!-- Side History Drawer -->
     <aside class="drawer-overlay" id="history-overlay">

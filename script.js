@@ -459,7 +459,11 @@ document.addEventListener('DOMContentLoaded', () => {
     async function performTranslation(text, srcCode, tgtCode, tone) {
         if (!text || !text.trim()) return '';
 
-        const src = srcCode === 'auto' ? 'auto' : srcCode;
+        let src = srcCode;
+        const isLatinInput = /^[a-zA-Z0-9\s.,!?'"\-]+$/.test(text.trim());
+        if (srcCode === 'auto' || (srcCode === tgtCode && isLatinInput) || (isLatinInput && tgtCode !== 'en' && srcCode !== 'en')) {
+            src = 'auto';
+        }
         const tgt = tgtCode;
 
         // Option A: Custom Gemini API
@@ -919,6 +923,53 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.toggle('dark-theme');
         showToast(`Theme: ${document.body.classList.contains('light-theme') ? 'Light Glass 3D' : 'Cyber Dark 3D'}`);
     });
+
+    // --- 14. Legal Modals & GDPR Cookie Banner Event Handlers ---
+    const cookieBanner = document.getElementById('cookie-banner');
+    const acceptCookiesBtn = document.getElementById('accept-cookies-btn');
+    const cookiePrivacyLink = document.getElementById('cookie-privacy-link');
+
+    const privacyModal = document.getElementById('privacy-modal');
+    const termsModal = document.getElementById('terms-modal');
+    const aboutModal = document.getElementById('about-modal');
+    const contactModal = document.getElementById('contact-modal');
+
+    const linkPrivacy = document.getElementById('link-privacy');
+    const linkTerms = document.getElementById('link-terms');
+    const linkAbout = document.getElementById('link-about');
+    const linkContact = document.getElementById('link-contact');
+
+    const closePrivacyBtn = document.getElementById('close-privacy-btn');
+    const closeTermsBtn = document.getElementById('close-terms-btn');
+    const closeAboutBtn = document.getElementById('close-about-btn');
+    const closeContactBtn = document.getElementById('close-contact-btn');
+
+    // Cookie Banner
+    if (localStorage.getItem('og_cookies_accepted') === 'true') {
+        cookieBanner.style.display = 'none';
+    }
+
+    acceptCookiesBtn.addEventListener('click', () => {
+        localStorage.setItem('og_cookies_accepted', 'true');
+        cookieBanner.style.display = 'none';
+        showToast('🍪 Cookie preferences saved');
+    });
+
+    cookiePrivacyLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        privacyModal.classList.add('open');
+    });
+
+    // Legal Links
+    linkPrivacy.addEventListener('click', () => privacyModal.classList.add('open'));
+    linkTerms.addEventListener('click', () => termsModal.classList.add('open'));
+    linkAbout.addEventListener('click', () => aboutModal.classList.add('open'));
+    linkContact.addEventListener('click', () => contactModal.classList.add('open'));
+
+    closePrivacyBtn.addEventListener('click', () => privacyModal.classList.remove('open'));
+    closeTermsBtn.addEventListener('click', () => termsModal.classList.remove('open'));
+    closeAboutBtn.addEventListener('click', () => aboutModal.classList.remove('open'));
+    closeContactBtn.addEventListener('click', () => contactModal.classList.remove('open'));
 
     // --- 13. Toast Notifications ---
     function showToast(message) {
