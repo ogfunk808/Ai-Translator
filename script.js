@@ -21,6 +21,8 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+window.firebaseApp = app;
+window.firebaseAnalytics = analytics;
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. Comprehensive World Languages Database (100+ Languages) ---
