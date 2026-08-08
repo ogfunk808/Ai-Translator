@@ -2,6 +2,26 @@
  * OG TRANSLATOR - Real 3D Three.js WebGL Logic & Voice Engine
  */
 
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDrWENCoUVpDP10wE2_4rt_8c26YpBV6-E",
+  authDomain: "aitranslator0.firebaseapp.com",
+  projectId: "aitranslator0",
+  storageBucket: "aitranslator0.firebasestorage.app",
+  messagingSenderId: "31896899334",
+  appId: "1:31896899334:web:7c91d1557dbbc82715d887",
+  measurementId: "G-0W8CNN5E21"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. Comprehensive World Languages Database (100+ Languages) ---
     const LANGUAGES = [

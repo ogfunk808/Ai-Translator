@@ -11,6 +11,16 @@
     <title>OG TRANSLATOR - Real 3D Voice & Text Translator</title>
     <meta name="description" content="OG TRANSLATOR - Next-gen 3D WebGL Neural Language & Voice Translator supporting 100+ languages, real-time voice recognition, text-to-speech audio, and 3D audio-reactive visualizers.">
     
+    <!-- Firebase SDK (ESM Import Map) -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js",
+                "firebase/analytics": "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js"
+            }
+        }
+    </script>
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -481,6 +491,6 @@
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Main JavaScript Logic -->
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
