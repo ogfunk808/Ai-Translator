@@ -1,3 +1,5 @@
 node_modules/
+.npm-cache/
+.firebase/
+firebase-debug.log
 .DS_Store
-*.log

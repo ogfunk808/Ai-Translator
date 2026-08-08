@@ -5,24 +5,24 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDrWENCoUVpDP10wE2_4rt_8c26YpBV6-E",
-  authDomain: "aitranslator0.firebaseapp.com",
-  projectId: "aitranslator0",
-  storageBucket: "aitranslator0.firebasestorage.app",
-  messagingSenderId: "31896899334",
-  appId: "1:31896899334:web:7c91d1557dbbc82715d887",
-  measurementId: "G-0W8CNN5E21"
+  apiKey: "AIzaSyD0Ts4FWFiIz9K9HnYct6T-OId08eMvgag",
+  authDomain: "aitranslator012.firebaseapp.com",
+  projectId: "aitranslator012",
+  storageBucket: "aitranslator012.firebasestorage.app",
+  messagingSenderId: "599687394548",
+  appId: "1:599687394548:web:29cd97a1ec031b17c7daa1",
+  measurementId: "G-GFB2K4ZE1K"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-window.firebaseApp = app;
-window.firebaseAnalytics = analytics;
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. Comprehensive World Languages Database (100+ Languages) ---

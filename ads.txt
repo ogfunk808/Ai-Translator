@@ -1,3 +1,1 @@
-# Google AdMob / AdSense
-# App ID: ca-app-pub-1560865754891276~9923162403
 google.com, pub-1560865754891276, DIRECT, f08c47fec0942fa0
