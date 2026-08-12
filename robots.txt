@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://aitranslator012.web.app/sitemap.xml
+Sitemap: https://ogtranslator.com/sitemap.xml
+Sitemap: https://www.ogtranslator.com/sitemap-www.xml
+Sitemap: https://aitranslator012.web.app/sitemap-firebase.xml
+Sitemap: https://ogfunk808.github.io/Ai-Translator/sitemap-github.xml
