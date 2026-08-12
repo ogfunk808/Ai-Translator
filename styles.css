@@ -1348,3 +1348,249 @@ body.light-theme .app-header {
         align-items: flex-start;
     }
 }
+
+/* ==========================================================================
+   Standalone Subpages & Tutorial Styles
+   ========================================================================== */
+.subpage-wrapper {
+    width: 100%;
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1.5rem 4rem 1.5rem;
+    position: relative;
+    z-index: 10;
+}
+
+.subpage-header {
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.subpage-title {
+    font-size: 2.75rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.03em;
+}
+
+.subpage-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    max-width: 720px;
+    margin: 0 auto 1.5rem auto;
+    line-height: 1.6;
+}
+
+.nav-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: var(--transition-fast);
+}
+
+.nav-back-btn:hover {
+    background: var(--gradient-primary);
+    border-color: transparent;
+    box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+    transform: translateY(-2px);
+}
+
+.page-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    backdrop-filter: var(--card-blur);
+    box-shadow: var(--glass-shadow);
+    margin-bottom: 2.5rem;
+}
+
+.page-card h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.page-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 1.5rem 0 0.75rem 0;
+    color: var(--accent-pink);
+}
+
+.page-card p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+    font-size: 0.975rem;
+}
+
+.page-card ul, .page-card ol {
+    margin: 0.75rem 0 1.25rem 1.5rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+.page-card li {
+    margin-bottom: 0.5rem;
+}
+
+/* Tutorial Grid & Step Cards */
+.tutorial-steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.75rem;
+    margin: 2rem 0;
+}
+
+.step-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+    display: flex;
+    flex-direction: column;
+}
+
+.step-card:hover {
+    border-color: var(--border-glass-glow);
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 20px 40px rgba(236, 72, 153, 0.2);
+}
+
+.step-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    color: white;
+    font-weight: 800;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.step-icon {
+    font-size: 2.2rem;
+    margin-bottom: 0.75rem;
+}
+
+.step-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.step-desc {
+    font-size: 0.925rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Shortcut Table */
+.shortcut-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.95rem;
+}
+
+.shortcut-table th, .shortcut-table td {
+    padding: 0.85rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.shortcut-table th {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.shortcut-table td {
+    color: var(--text-secondary);
+}
+
+.shortcut-table kbd {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid var(--border-glass);
+    border-radius: 6px;
+    padding: 0.2rem 0.5rem;
+    font-family: monospace;
+    font-weight: 700;
+    color: var(--accent-pink);
+}
+
+/* Contact Form Grid */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 850px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.contact-info-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-glass);
+}
+
+.info-icon {
+    font-size: 1.5rem;
+}
+
+.info-details h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.info-details p, .info-details a {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+
+.info-details a:hover {
+    color: var(--accent-pink);
+}
+
+.footer-link-btn {
+    text-decoration: none;
+    display: inline-block;
+}
+

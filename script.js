@@ -983,15 +983,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Legal Links
-    linkPrivacy.addEventListener('click', () => privacyModal.classList.add('open'));
-    linkTerms.addEventListener('click', () => termsModal.classList.add('open'));
-    linkAbout.addEventListener('click', () => aboutModal.classList.add('open'));
-    linkContact.addEventListener('click', () => contactModal.classList.add('open'));
+    if (linkPrivacy) linkPrivacy.addEventListener('click', () => privacyModal.classList.add('open'));
+    if (linkTerms) linkTerms.addEventListener('click', () => termsModal.classList.add('open'));
+    if (linkAbout) linkAbout.addEventListener('click', () => aboutModal.classList.add('open'));
+    if (linkContact) linkContact.addEventListener('click', () => contactModal.classList.add('open'));
 
-    closePrivacyBtn.addEventListener('click', () => privacyModal.classList.remove('open'));
-    closeTermsBtn.addEventListener('click', () => termsModal.classList.remove('open'));
-    closeAboutBtn.addEventListener('click', () => aboutModal.classList.remove('open'));
-    closeContactBtn.addEventListener('click', () => contactModal.classList.remove('open'));
+    if (closePrivacyBtn) closePrivacyBtn.addEventListener('click', () => privacyModal.classList.remove('open'));
+    if (closeTermsBtn) closeTermsBtn.addEventListener('click', () => termsModal.classList.remove('open'));
+    if (closeAboutBtn) closeAboutBtn.addEventListener('click', () => aboutModal.classList.remove('open'));
+    if (closeContactBtn) closeContactBtn.addEventListener('click', () => contactModal.classList.remove('open'));
 
     // --- 13. Toast Notifications ---
     function showToast(message) {
